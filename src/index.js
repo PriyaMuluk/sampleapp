@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
 app.get('/api/todos', (req, res) => {
   try {
     const todos = todoService.getAllTodos();
-    res.json({ 
+    res.status(200).json({ 
       success: true, 
       count: todos.length, 
       todos 
@@ -78,7 +78,7 @@ app.get('/api/todos/:id', (req, res) => {
       });
     }
 
-    res.json({ success: true, todo });
+    res.status(200).json({ success: true, todo });
   } catch (error) {
     res.status(500).json({ 
       success: false, 
@@ -123,7 +123,7 @@ app.put('/api/todos/:id', (req, res) => {
       });
     }
 
-    res.json({ success: true, todo });
+    res.status(200).json({ success: true, todo });
   } catch (error) {
     res.status(400).json({ 
       success: false, 
@@ -151,7 +151,7 @@ app.delete('/api/todos/:id', (req, res) => {
       });
     }
 
-    res.json({ 
+    res.status(200).json({ 
       success: true, 
       message: 'Todo deleted successfully' 
     });
@@ -167,7 +167,6 @@ app.delete('/api/todos/:id', (req, res) => {
 app.get('/api/todos/completed', (req, res) => {
   try {
     const todos = todoService.getCompletedTodos();
-    // Always return 200 OK, even if no todos
     res.status(200).json({
       success: true,
       count: todos.length,
@@ -197,3 +196,25 @@ app.get('/api/todos/pending', (req, res) => {
     });
   }
 });
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(500).json({ success: false, error: 'Internal server error' });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, error: 'Endpoint not found' });
+});
+
+// Start server only if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Todo API running on port ${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/health`);
+  });
+}
+
+// ✅ Export the Express app itself for Jest (important!)
+module.exports = app;

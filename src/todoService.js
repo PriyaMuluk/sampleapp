@@ -38,13 +38,14 @@ class TodoService {
       throw new Error('Title is required and must be a non-empty string');
     }
 
+    const now = new Date().toISOString();
     const todo = {
       id: this.nextId++,
       title: title.trim(),
       description: description ? description.trim() : '',
       completed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now
     };
 
     this.todos.push(todo);
@@ -83,12 +84,12 @@ class TodoService {
       todo.completed = updates.completed;
     }
 
-    // ✅ Ensure updatedAt always changes even if same millisecond
-    const newTimestamp = new Date().toISOString();
-    todo.updatedAt = 
-      newTimestamp === todo.updatedAt
-        ? new Date(Date.now() + 1).toISOString()
-        : newTimestamp;
+    // ✅ Guarantee updatedAt always changes (even same millisecond)
+    const now = Date.now();
+    const prevTime = new Date(todo.updatedAt).getTime();
+    todo.updatedAt = now <= prevTime
+      ? new Date(prevTime + 1).toISOString()
+      : new Date(now).toISOString();
 
     return todo;
   }
