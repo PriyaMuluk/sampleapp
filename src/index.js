@@ -202,6 +202,16 @@ app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
   res.status(500).json({ success: false, error: 'Internal server error' });
 });
+// Temporary test cleanup endpoint (not for production)
+app.delete('/api/todos/clear-all', (req, res) => {
+  try {
+    const count = todoService.clearAll();
+    res.status(200).json({ success: true, deleted: count });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 // 404 handler
 app.use((req, res) => {

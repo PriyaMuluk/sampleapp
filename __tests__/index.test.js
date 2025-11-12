@@ -190,6 +190,11 @@ describe('Todo API', () => {
       expect(response.body.success).toBe(true);
     });
   });
+  beforeEach(async () => {
+  // Clear all todos before each test to avoid stale data
+  await request(app).delete('/api/todos/clear-all').catch(() => {});
+});
+
 
   describe('404 handler', () => {
     test('should return 404 for unknown endpoints', async () => {
