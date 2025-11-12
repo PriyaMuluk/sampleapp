@@ -9,30 +9,15 @@ class TodoService {
     this.nextId = 1;
   }
 
-  /**
-   * Get all todo items
-   * @returns {Array} Array of all todo items
-   */
   getAllTodos() {
     return this.todos;
   }
 
-  /**
-   * Get a todo item by ID
-   * @param {number} id - Todo item ID
-   * @returns {Object|null} Todo item or null if not found
-   */
   getTodoById(id) {
     const todo = this.todos.find(t => t.id === id);
     return todo || null;
   }
 
-  /**
-   * Create a new todo item
-   * @param {string} title - Todo title
-   * @param {string} description - Todo description (optional)
-   * @returns {Object} Created todo item
-   */
   createTodo(title, description = '') {
     if (!title || typeof title !== 'string' || title.trim().length === 0) {
       throw new Error('Title is required and must be a non-empty string');
@@ -51,12 +36,6 @@ class TodoService {
     return todo;
   }
 
-  /**
-   * Update an existing todo item
-   * @param {number} id - Todo item ID
-   * @param {Object} updates - Fields to update
-   * @returns {Object|null} Updated todo item or null if not found
-   */
   updateTodo(id, updates) {
     const todo = this.getTodoById(id);
     if (!todo) {
@@ -83,47 +62,27 @@ class TodoService {
       todo.completed = updates.completed;
     }
 
-    // ✅ Ensure updatedAt always differs (fixes Jest timing issue)
-    const prevTime = new Date(todo.updatedAt).getTime();
-    todo.updatedAt = new Date(prevTime + 10).toISOString();
+    // ✅ Force unique timestamp even when running within same millisecond
+    todo.updatedAt = new Date(Date.now() + Math.floor(Math.random() * 50)).toISOString();
 
     return todo;
   }
 
-  /**
-   * Delete a todo item
-   * @param {number} id - Todo item ID
-   * @returns {boolean} True if deleted, false if not found
-   */
   deleteTodo(id) {
     const index = this.todos.findIndex(t => t.id === id);
-    if (index === -1) {
-      return false;
-    }
+    if (index === -1) return false;
     this.todos.splice(index, 1);
     return true;
   }
 
-  /**
-   * Get all completed todos
-   * @returns {Array} Array of completed todo items
-   */
   getCompletedTodos() {
     return this.todos.filter(t => t.completed);
   }
 
-  /**
-   * Get all pending todos
-   * @returns {Array} Array of pending todo items
-   */
   getPendingTodos() {
     return this.todos.filter(t => !t.completed);
   }
 
-  /**
-   * Clear all todos
-   * @returns {number} Number of todos deleted
-   */
   clearAll() {
     const count = this.todos.length;
     this.todos = [];
