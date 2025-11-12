@@ -167,15 +167,16 @@ app.delete('/api/todos/:id', (req, res) => {
 app.get('/api/todos/completed', (req, res) => {
   try {
     const todos = todoService.getCompletedTodos();
-    res.json({ 
-      success: true, 
-      count: todos.length, 
-      todos 
+    // Always return 200 OK, even if no todos
+    res.status(200).json({
+      success: true,
+      count: todos.length,
+      todos
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      error: error.message
     });
   }
 });
@@ -184,43 +185,15 @@ app.get('/api/todos/completed', (req, res) => {
 app.get('/api/todos/pending', (req, res) => {
   try {
     const todos = todoService.getPendingTodos();
-    res.json({ 
-      success: true, 
-      count: todos.length, 
-      todos 
+    res.status(200).json({
+      success: true,
+      count: todos.length,
+      todos
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      error: error.message
     });
   }
 });
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ 
-    success: false, 
-    error: 'Internal server error' 
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    error: 'Endpoint not found' 
-  });
-});
-
-// Start server
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Todo API server running on port ${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/health`);
-  });
-}
-
-module.exports = app;
-
