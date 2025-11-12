@@ -71,8 +71,8 @@ class TodoService {
     }
 
     if (updates.description !== undefined) {
-      todo.description = typeof updates.description === 'string' 
-        ? updates.description.trim() 
+      todo.description = typeof updates.description === 'string'
+        ? updates.description.trim()
         : '';
     }
 
@@ -83,7 +83,13 @@ class TodoService {
       todo.completed = updates.completed;
     }
 
-    todo.updatedAt = new Date().toISOString();
+    // ✅ Ensure updatedAt always changes even if same millisecond
+    const newTimestamp = new Date().toISOString();
+    todo.updatedAt = 
+      newTimestamp === todo.updatedAt
+        ? new Date(Date.now() + 1).toISOString()
+        : newTimestamp;
+
     return todo;
   }
 
@@ -129,4 +135,3 @@ class TodoService {
 }
 
 module.exports = TodoService;
-
