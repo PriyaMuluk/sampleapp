@@ -46,16 +46,9 @@ app.get('/', (req, res) => {
 app.get('/api/todos', (req, res) => {
   try {
     const todos = todoService.getAllTodos();
-    res.status(200).json({ 
-      success: true, 
-      count: todos.length, 
-      todos 
-    });
+    res.status(200).json({ success: true, count: todos.length, todos });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -64,26 +57,17 @@ app.get('/api/todos/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid ID format' 
-      });
+      return res.status(400).json({ success: false, error: 'Invalid ID format' });
     }
 
     const todo = todoService.getTodoById(id);
     if (!todo) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Todo not found' 
-      });
+      return res.status(404).json({ success: false, error: 'Todo not found' });
     }
 
     res.status(200).json({ success: true, todo });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
@@ -92,15 +76,9 @@ app.post('/api/todos', (req, res) => {
   try {
     const { title, description } = req.body;
     const todo = todoService.createTodo(title, description);
-    res.status(201).json({ 
-      success: true, 
-      todo 
-    });
+    res.status(201).json({ success: true, todo });
   } catch (error) {
-    res.status(400).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
@@ -109,26 +87,17 @@ app.put('/api/todos/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid ID format' 
-      });
+      return res.status(400).json({ success: false, error: 'Invalid ID format' });
     }
 
     const todo = todoService.updateTodo(id, req.body);
     if (!todo) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Todo not found' 
-      });
+      return res.status(404).json({ success: false, error: 'Todo not found' });
     }
 
     res.status(200).json({ success: true, todo });
   } catch (error) {
-    res.status(400).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 
@@ -137,83 +106,40 @@ app.delete('/api/todos/:id', (req, res) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid ID format' 
-      });
+      return res.status(400).json({ success: false, error: 'Invalid ID format' });
     }
 
     const deleted = todoService.deleteTodo(id);
     if (!deleted) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'Todo not found' 
-      });
+      return res.status(404).json({ success: false, error: 'Todo not found' });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Todo deleted successfully' 
-    });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
-});
-
-// Get completed todos
-app.get('/api/todos/completed', (req, res) => {
-  try {
-    const todos = todoService.getCompletedTodos();
-    res.status(200).json({
-      success: true,
-      count: todos.length,
-      todos
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// Get pending todos
-app.get('/api/todos/pending', (req, res) => {
-  try {
-    const todos = todoService.getPendingTodos();
-    res.status(200).json({
-      success: true,
-      count: todos.length,
-      todos
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Unhandled Error:', err);
-  res.status(500).json({ success: false, error: 'Internal server error' });
-});
-// Temporary test cleanup endpoint (not for production)
-app.delete('/api/todos/clear-all', (req, res) => {
-  try {
-    const count = todoService.clearAll();
-    res.status(200).json({ success: true, deleted: count });
+    res.status(200).json({ success: true, message: 'Todo deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
+// ✅ Always return 200 for completed/pending todos
+app.get('/api/todos/completed', (req, res) => {
+  try {
+    const todos = todoService.getCompletedTodos();
+    res.status(200).json({ success: true, count: todos.length, todos });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
-// 404 handler
+app.get('/api/todos/pending', (req, res) => {
+  try {
+    const todos = todoService.getPendingTodos();
+    res.status(200).json({ success: true, count: todos.length, todos });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 404 Handler
 app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Endpoint not found' });
 });
@@ -226,5 +152,5 @@ if (require.main === module) {
   });
 }
 
-// ✅ Export the Express app itself for Jest (important!)
+// ✅ Export for Jest
 module.exports = app;
