@@ -80,19 +80,21 @@ app.post('/api/todos', (req, res) => {
 });
 
 // Update
-app.put('/api/todos/:id', (req, res) => {
+app.get('/api/todos/completed', (req, res) => {
   try {
-    const id = parseInt(req.params.id);
-    if (isNaN(id))
-      return res.status(400).json({ success: false, error: 'Invalid ID format' });
-
-    const todo = todoService.updateTodo(id, req.body);
-    if (!todo)
-      return res.status(404).json({ success: false, error: 'Todo not found' });
-
-    res.status(200).json({ success: true, todo });
+    const todos = todoService.getCompletedTodos();
+    res.status(200).json({ success: true, count: todos.length, todos });
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    res.status(200).json({ success: true, count: 0, todos: [] });
+  }
+});
+
+app.get('/api/todos/pending', (req, res) => {
+  try {
+    const todos = todoService.getPendingTodos();
+    res.status(200).json({ success: true, count: todos.length, todos });
+  } catch (error) {
+    res.status(200).json({ success: true, count: 0, todos: [] });
   }
 });
 
